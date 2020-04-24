@@ -1,4 +1,4 @@
-package com.zhipu.middleground.app.ble;
+package com.zhipu.middleground.app.connect.ble;
 
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
@@ -151,8 +151,8 @@ public class BluetoothLeService extends Service {
         sendBroadcast(intent);
     }
 
-    class LocalBinder extends Binder {
-        BluetoothLeService getService() {
+    public class LocalBinder extends Binder {
+        public BluetoothLeService getService() {
             return BluetoothLeService.this;
         }
     }

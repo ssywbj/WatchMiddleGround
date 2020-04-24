@@ -1,4 +1,4 @@
-package com.zhipu.middleground.app.ble;
+package com.zhipu.middleground.app.activity;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -26,6 +26,7 @@ import android.widget.Toast;
 import com.zhipu.middle.common.SampleGattAttributes;
 import com.zhipu.middleground.app.R;
 import com.zhipu.middleground.app.connect.BluetoothConnectHelper;
+import com.zhipu.middleground.app.connect.ble.BluetoothLeService;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -150,7 +151,7 @@ public class DeviceControlActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.gatt_services_characteristics);
+        setContentView(R.layout.device_control_aty);
 
         final Intent intent = getIntent();
         mDeviceAddress = intent.getStringExtra(EXTRAS_DEVICE_ADDRESS);
@@ -224,7 +225,7 @@ public class DeviceControlActivity extends Activity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.gatt_services, menu);
+        getMenuInflater().inflate(R.menu.device_control_aty_menu, menu);
         if (mConnected) {
             menu.findItem(R.id.menu_connect).setVisible(false);
             menu.findItem(R.id.menu_disconnect).setVisible(true);

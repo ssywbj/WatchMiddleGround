@@ -1,4 +1,4 @@
-package com.zhipu.middleground.app;
+package com.zhipu.middleground.app.view;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -11,6 +11,8 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.OrientationHelper;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
+
+import com.zhipu.middleground.app.R;
 
 public class RecyclerItemDecoration extends RecyclerView.ItemDecoration {
     public static final int LIST_DIVIDER_DIMEN = 1;//分隔线尺寸

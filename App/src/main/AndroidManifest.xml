@@ -22,7 +22,7 @@
         android:theme="@style/AppTheme">
 
         <activity
-            android:name=".BluetoothListActivity"
+            android:name=".activity.BluetoothListActivity"
             android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -32,13 +32,11 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".BluetoothConnectActivity" />
-
         <activity
-            android:name=".ble.DeviceControlActivity"
+            android:name=".activity.DeviceControlActivity"
             android:theme="@android:style/Theme.Holo.Light" />
         <service
-            android:name=".ble.BluetoothLeService"
+            android:name=".connect.ble.BluetoothLeService"
             android:enabled="true" />
     </application>
 

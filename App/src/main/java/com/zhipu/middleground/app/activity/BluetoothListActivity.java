@@ -1,4 +1,4 @@
-package com.zhipu.middleground.app;
+package com.zhipu.middleground.app.activity;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
@@ -20,8 +20,9 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.zhipu.middleground.app.R;
 import com.zhipu.middleground.app.adapter.RecyclerAdapter;
-import com.zhipu.middleground.app.ble.DeviceControlActivity;
+import com.zhipu.middleground.app.view.RecyclerItemDecoration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +39,7 @@ public class BluetoothListActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.bluetooth_bluetooth_list_aty);
+        setContentView(R.layout.bluetooth_list_aty);
         mTag = getClass().getSimpleName();
         this.initRecyclerView();
 
@@ -244,7 +245,7 @@ public class BluetoothListActivity extends AppCompatActivity {
         @NonNull
         @Override
         public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            return new ContentHolder(getItemLayout(parent.getContext(), R.layout.bluetooth_bluetooth_list_aty_adt));
+            return new ContentHolder(getItemLayout(parent.getContext(), R.layout.bluetooth_list_aty_adt));
         }
 
         static class ContentHolder extends RecyclerView.ViewHolder {

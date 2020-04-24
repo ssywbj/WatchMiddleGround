@@ -115,23 +115,31 @@ public class DeviceControlActivity extends Activity {
                     if (mGattCharacteristics != null) {
                         final BluetoothGattCharacteristic characteristic =
                                 mGattCharacteristics.get(groupPosition).get(childPosition);
-                        final int charaProp = characteristic.getProperties();
-                        if ((charaProp | BluetoothGattCharacteristic.PROPERTY_READ) > 0) {
-                            // If there is an active notification on a characteristic, clear
-                            // it first so it doesn't update the data field on the user interface.
-                            if (mNotifyCharacteristic != null) {
-                                mBluetoothLeService.setCharacteristicNotification(mNotifyCharacteristic, false);
-                                mNotifyCharacteristic = null;
+                        String uuid = characteristic.getUuid().toString();
+                        if (uuid.equals(SampleGattAttributes.CHAR_READ_WEATHER)) {
+                            final int charaProp = characteristic.getProperties();
+                            if ((charaProp | BluetoothGattCharacteristic.PROPERTY_READ) > 0) {
+                                // If there is an active notification on a characteristic, clear
+                                // it first so it doesn't update the data field on the user interface.
+                                if (mNotifyCharacteristic != null) {
+                                    mBluetoothLeService.setCharacteristicNotification(mNotifyCharacteristic, false);
+                                    mNotifyCharacteristic = null;
+                                }
+                                mBluetoothLeService.readCharacteristic(characteristic);
                             }
-                            mBluetoothLeService.readCharacteristic(characteristic);
-                        }
 
-                        if ((charaProp | BluetoothGattCharacteristic.PROPERTY_NOTIFY) > 0) {
-                            mNotifyCharacteristic = characteristic;
-                            mBluetoothLeService.setCharacteristicNotification(characteristic, true);
+                            if ((charaProp | BluetoothGattCharacteristic.PROPERTY_NOTIFY) > 0) {
+                                mNotifyCharacteristic = characteristic;
+                                mBluetoothLeService.setCharacteristicNotification(characteristic, true);
+                            }
+                        } else if (uuid.equals(SampleGattAttributes.CHAR_WRITE_SMS)) {
+                            Toast.makeText(DeviceControlActivity.this, "Write Data",
+                                    Toast.LENGTH_SHORT).show();
+                            mBluetoothLeService.write("tttt".getBytes(), writeCharacteristic);//向蓝牙传输数据失败，正在解决
                         }
                         return true;
                     }
+
                     return false;
                 }
             };
@@ -332,6 +340,8 @@ public class DeviceControlActivity extends Activity {
         );
         mGattServicesList.setAdapter(gattServiceAdapter);
     }
+
+    BluetoothGattCharacteristic writeCharacteristic;
 
     private static IntentFilter makeGattUpdateIntentFilter() {
         final IntentFilter intentFilter = new IntentFilter();

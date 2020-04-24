@@ -28,9 +28,17 @@ import com.zhipu.middle.common.SampleGattAttributes;
 import java.util.UUID;
 
 public class MiddleGroundService extends Service {
-
     private static final String TAG = MiddleGroundService.class.getSimpleName();
     private BluetoothConnectHelper mBluetoothConnectHelper = new BluetoothConnectHelper();
+
+    private final static UUID UUID_SERVER = UUID.fromString(SampleGattAttributes.UUID_SERVER);
+    private final static UUID UUID_READ_WEATHER = UUID.fromString(SampleGattAttributes.CHAR_READ_WEATHER);
+    private final static UUID UUID_WRITE_SMS = UUID.fromString(SampleGattAttributes.CHAR_WRITE_SMS);
+    private final static UUID UUID_DESCRIPTOR = UUID.fromString(SampleGattAttributes.UUID_NOTIFY);
+
+    private BluetoothManager mBluetoothManager;
+    private BluetoothGattServer mBluetoothGattServer;
+    private BluetoothDevice mBluetoothDevice;
 
     @Override
     public void onCreate() {
@@ -62,17 +70,6 @@ public class MiddleGroundService extends Service {
         Log.d(TAG, TAG + ", onDestroy");
         mBluetoothConnectHelper.stop();
     }
-
-    private final static UUID UUID_SERVER = UUID.fromString(SampleGattAttributes.UUID_SERVER);
-    private final static UUID UUID_CHARREAD = UUID.fromString(SampleGattAttributes.CHAR_MANUFACTURER_NAME);
-    private final static UUID UUID_CHARWRITE = UUID.fromString(SampleGattAttributes.UUID_WRITE);
-    private final static UUID UUID_DESCRIPTOR = UUID.fromString(SampleGattAttributes.UUID_NOTIFY);
-
-
-    private BluetoothManager mBluetoothManager;
-    private BluetoothGattServer mBluetoothGattServer;
-    private BluetoothGattCharacteristic mGattCharacteristic;
-    private BluetoothDevice mBluetoothDevice;
 
     private void initGATTServer() {
         if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
@@ -126,18 +123,28 @@ public class MiddleGroundService extends Service {
         BluetoothGattService service = new BluetoothGattService(UUID_SERVER, BluetoothGattService.SERVICE_TYPE_PRIMARY);
 
         //add a read characteristic.
-        mGattCharacteristic = new BluetoothGattCharacteristic(UUID_CHARREAD, BluetoothGattCharacteristic.PROPERTY_READ, BluetoothGattCharacteristic.PERMISSION_READ);
+        BluetoothGattCharacteristic gattCharacteristic = new BluetoothGattCharacteristic(UUID_READ_WEATHER,
+                BluetoothGattCharacteristic.PROPERTY_READ, BluetoothGattCharacteristic.PERMISSION_READ);
         //add a descriptor
         BluetoothGattDescriptor descriptor = new BluetoothGattDescriptor(UUID_DESCRIPTOR, BluetoothGattCharacteristic.PERMISSION_WRITE);
-        mGattCharacteristic.addDescriptor(descriptor);
-        service.addCharacteristic(mGattCharacteristic);
+        gattCharacteristic.addDescriptor(descriptor);
+        service.addCharacteristic(gattCharacteristic);
+
+        /*gattCharacteristic = new BluetoothGattCharacteristic(UUID_READ_SMS,
+                BluetoothGattCharacteristic.PROPERTY_READ, BluetoothGattCharacteristic.PERMISSION_READ);
+        //add a descriptor
+        descriptor = new BluetoothGattDescriptor(UUID_DESCRIPTOR, BluetoothGattCharacteristic.PERMISSION_WRITE);
+        gattCharacteristic.addDescriptor(descriptor);
+        service.addCharacteristic(gattCharacteristic);*/
 
         //add a write characteristic.
-        BluetoothGattCharacteristic characteristicWrite = new BluetoothGattCharacteristic(UUID_CHARWRITE,
+        BluetoothGattCharacteristic characteristicWrite = new BluetoothGattCharacteristic(UUID_WRITE_SMS,
                 BluetoothGattCharacteristic.PROPERTY_WRITE |
                         BluetoothGattCharacteristic.PROPERTY_READ |
                         BluetoothGattCharacteristic.PROPERTY_NOTIFY,
                 BluetoothGattCharacteristic.PERMISSION_WRITE);
+        descriptor = new BluetoothGattDescriptor(UUID_DESCRIPTOR, BluetoothGattCharacteristic.PERMISSION_READ);
+        characteristicWrite.addDescriptor(descriptor);
         service.addCharacteristic(characteristicWrite);
 
         mBluetoothGattServer.addService(service);
@@ -167,9 +174,19 @@ public class MiddleGroundService extends Service {
             super.onCharacteristicReadRequest(device, requestId, offset, characteristic);
             Log.d(TAG, String.format("onCharacteristicReadRequest：device name = %s, address = %s,requestId = %s" +
                     ", offset = %s ", device.getName(), device.getAddress(), requestId, offset));
-            mBluetoothGattServer.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, offset, characteristic.getValue());
+            byte[] value = characteristic.getValue();
+            mBluetoothGattServer.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, offset, value);
+            if (value == null) {
+                Log.d(TAG, "data is null");
+            } else {
+                Log.d(TAG, "data len: " + value.length + ", data: " + new String(value));
+            }
 
-            sendMessage("Wbj Data");
+            if (characteristic.getUuid() == UUID_READ_WEATHER) {
+                sendMessage(characteristic, "从设备返回的天气信息");
+            } else if (characteristic.getUuid() == UUID_WRITE_SMS) {
+                sendMessage(characteristic, "从设备返回的短信信息");
+            }
         }
 
         /**
@@ -235,10 +252,10 @@ public class MiddleGroundService extends Service {
         mBluetoothDevice = device;
     }
 
-    private void sendMessage(String message) {
-        mGattCharacteristic.setValue(message.getBytes());
+    private void sendMessage(BluetoothGattCharacteristic characteristic, String message) {
+        characteristic.setValue(message.getBytes());
         if (mBluetoothDevice != null) {
-            mBluetoothGattServer.notifyCharacteristicChanged(mBluetoothDevice, mGattCharacteristic, false);
+            mBluetoothGattServer.notifyCharacteristicChanged(mBluetoothDevice, characteristic, false);
         }
         Log.d(TAG, "4.发送: " + message);
     }

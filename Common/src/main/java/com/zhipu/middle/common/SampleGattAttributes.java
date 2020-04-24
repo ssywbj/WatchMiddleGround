@@ -28,23 +28,23 @@ public class SampleGattAttributes {
 
     public static final String SERVICE_HEART_RATE = "0000180d-0000-1000-8000-00805f9b34fb";
     public static final String SERVICE_DEVICE_INFO = "0000180a-0000-1000-8000-00805f9b34fb";
-    public static final String CHAR_MANUFACTURER_NAME = "00002a29-0000-1000-8000-00805f9b34fb";
+    public static final String CHAR_READ_WEATHER = "00002a29-0000-1000-8000-00805f9b34fb";
 
     public final static String UUID_SERVER = "0000ffe0-0000-1000-8000-00805f9b34fb";
-    public static final String UUID_WRITE = "0000ff02-0000-1000-8000-00805f9b34fb";//写入特征UUID
+    public static final String CHAR_WRITE_SMS = "0000ff02-0000-1000-8000-00805f9b34fb";//写入特征UUID
     public final static String UUID_NOTIFY = "0000ffe1-0000-1000-8000-00805f9b34fb";
 
     static {
         // Sample Services.
         attributes.put(SERVICE_HEART_RATE, "Heart Rate Service");
         attributes.put(SERVICE_DEVICE_INFO, "Device Information Service");
-        // Sample Characteristics.
         attributes.put(HEART_RATE_MEASUREMENT, "Heart Rate Measurement");
-        attributes.put(CHAR_MANUFACTURER_NAME, "Manufacturer Name String");
 
-        attributes.put(UUID_SERVER, "UUID SERVER");
-        attributes.put(UUID_WRITE, "UUID WRITE");
         attributes.put(UUID_NOTIFY, "UUID NOTIFY");
+
+        attributes.put(UUID_SERVER, "交互服务");
+        attributes.put(CHAR_READ_WEATHER, "读取天气信息");
+        attributes.put(CHAR_WRITE_SMS, "写入短信信息");
     }
 
     public static String lookup(String uuid, String defaultName) {

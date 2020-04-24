@@ -61,7 +61,7 @@ public class BluetoothLeService extends Service {
                     mConnectionState = STATE_CONNECTED;
                     broadcastUpdate(ACTION_GATT_CONNECTED);
                     // Attempts to discover services after successful connection.
-                    Log.d(TAG, "Attempting to start service discovery: " + mBluetoothGatt.discoverServices());
+                    Log.d(TAG, "Attempting to start service discovery: " + gatt.discoverServices());
                 } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                     mConnectionState = STATE_DISCONNECTED;
                     Log.d(TAG, "Disconnected from GATT server.");
@@ -72,6 +72,7 @@ public class BluetoothLeService extends Service {
 
         @Override
         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
+            mBluetoothGatt = gatt;
             Log.d(TAG, "onServicesDiscovered, status: " + status + ", getServices: " + gatt.getServices().size());
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 broadcastUpdate(ACTION_GATT_SERVICES_DISCOVERED);
@@ -83,7 +84,7 @@ public class BluetoothLeService extends Service {
             BluetoothDevice device = gatt.getDevice();
             Log.d(TAG, "onCharacteristicRead status: " + status + ", device name: "
                     + device.getName() + ", address: " + device.getAddress());
-            if (status == BluetoothGatt.GATT_SUCCESS) {
+            if (status == BluetoothGatt.GATT_SUCCESS) {//接收到蓝牙发送的数据
                 broadcastUpdate(characteristic);
             }
         }
@@ -228,7 +229,8 @@ public class BluetoothLeService extends Service {
         }
         // We want to directly connect to the device, so we are setting the autoConnect
         // parameter to false.
-        mBluetoothGatt = device.connectGatt(this, false, mGattCallback);
+        //mBluetoothGatt = device.connectGatt(this, false, mGattCallback);
+        device.connectGatt(this, false, mGattCallback);
         Log.d(TAG, "Trying to create a new connection.");
         mBluetoothDeviceAddress = address;
         mConnectionState = STATE_CONNECTING;
@@ -278,20 +280,12 @@ public class BluetoothLeService extends Service {
         mBluetoothGatt.readCharacteristic(characteristic);
     }
 
-    public void writeCharacteristic(BluetoothGattCharacteristic characteristic) {
-        if (mBluetoothAdapter == null || mBluetoothGatt == null) {
-            Log.w(TAG, "BluetoothAdapter not initialized");
-            return;
-        }
+    public void write(byte[] cmd, BluetoothGattCharacteristic characteristic) {
+        characteristic.setValue(cmd);
+        characteristic.setWriteType(BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT);
         mBluetoothGatt.writeCharacteristic(characteristic);
+        Log.d(TAG, "write:--->" + new String(cmd));
     }
-
-    public void write(String message, BluetoothGattCharacteristic bleGattCharacteristic) {
-        mBluetoothGatt.setCharacteristicNotification(bleGattCharacteristic, true);
-        bleGattCharacteristic.setValue(message.getBytes());
-        this.writeCharacteristic(bleGattCharacteristic);
-    }
-
 
     /**
      * Enables or disables notification on a give characteristic.

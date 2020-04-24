@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.zhipu.middleground.watch">
 
-    <uses-feature android:name="android.hardware.type.watch" />
+    <!--<uses-feature android:name="android.hardware.type.watch" />-->
     <uses-feature
         android:name="android.hardware.bluetooth_le"
         android:required="true" />

@@ -175,7 +175,7 @@ public class MiddleGroundService extends Service {
             Log.d(TAG, String.format("onCharacteristicReadRequest：device name = %s, address = %s,requestId = %s" +
                     ", offset = %s ", device.getName(), device.getAddress(), requestId, offset));
             byte[] value = characteristic.getValue();
-            mBluetoothGattServer.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, offset, value);
+            mBluetoothGattServer.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, offset, characteristic.getValue());
             if (value == null) {
                 Log.d(TAG, "data is null");
             } else {
@@ -184,8 +184,6 @@ public class MiddleGroundService extends Service {
 
             if (characteristic.getUuid() == UUID_READ_WEATHER) {
                 sendMessage(characteristic, "从设备返回的天气信息");
-            } else if (characteristic.getUuid() == UUID_WRITE_SMS) {
-                sendMessage(characteristic, "从设备返回的短信信息");
             }
         }
 
@@ -197,7 +195,7 @@ public class MiddleGroundService extends Service {
             super.onCharacteristicWriteRequest(device, requestId, characteristic, preparedWrite, responseNeeded, offset, value);
             Log.d(TAG, String.format("3.onCharacteristicWriteRequest：device name = %s, address = %s", device.getName(), device.getAddress()));
             mBluetoothGattServer.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, offset, value);
-            //4.处理响应内容
+            //mBluetoothGattServer.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, offset, "CCCCC".getBytes());
             onResponseToClient(value, device, requestId, characteristic);
         }
 
@@ -250,6 +248,8 @@ public class MiddleGroundService extends Service {
         Log.d(TAG, String.format("4.onResponseToClient：device name = %s, address = %s, requestId = %s," +
                 " data = %s", device.getName(), device.getAddress(), requestId, data));
         mBluetoothDevice = device;
+
+        sendMessage(characteristic, "CCCCC");
     }
 
     private void sendMessage(BluetoothGattCharacteristic characteristic, String message) {

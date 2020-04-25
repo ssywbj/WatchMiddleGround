@@ -91,14 +91,18 @@ public class BluetoothLeService extends Service {
 
         @Override
         public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
-            Log.d(TAG, "onCharacteristicChanged received: " + characteristic);
+            byte[] value = characteristic.getValue();
+            String data = new String(value);
+            Log.d(TAG, "onCharacteristicChanged: " + characteristic + ", data: " + data);
             broadcastUpdate(characteristic);
         }
 
         @Override
         public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
             super.onCharacteristicWrite(gatt, characteristic, status);
-            Log.d(TAG, "onCharacteristicWrite characteristic: " + characteristic + ", status: " + status);
+            byte[] value = characteristic.getValue();
+            String data = new String(value);
+            Log.d(TAG, "onCharacteristicWrite characteristic: " + characteristic + ", status: " + status + ", data: " + data);
         }
 
         @Override
@@ -281,10 +285,23 @@ public class BluetoothLeService extends Service {
     }
 
     public void write(byte[] cmd, BluetoothGattCharacteristic characteristic) {
+        if (characteristic == null) {
+            return;
+        }
         characteristic.setValue(cmd);
         characteristic.setWriteType(BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT);
+        mBluetoothGatt.setCharacteristicNotification(characteristic, true);
         mBluetoothGatt.writeCharacteristic(characteristic);
-        Log.d(TAG, "write:--->" + new String(cmd));
+    }
+
+    public void write(byte[] data) {
+        BluetoothGattService service = mBluetoothGatt.getService(UUID.fromString(SampleGattAttributes.UUID_SERVER));
+        BluetoothGattCharacteristic characteristic = service.getCharacteristic(UUID.fromString(SampleGattAttributes.CHAR_WRITE_SMS));
+        this.write(data, characteristic);
+    }
+
+    public void write(String msg) {
+        this.write(msg.getBytes());
     }
 
     /**

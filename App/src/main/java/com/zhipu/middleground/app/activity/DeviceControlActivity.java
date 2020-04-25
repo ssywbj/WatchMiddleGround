@@ -133,9 +133,8 @@ public class DeviceControlActivity extends Activity {
                                 mBluetoothLeService.setCharacteristicNotification(characteristic, true);
                             }
                         } else if (uuid.equals(SampleGattAttributes.CHAR_WRITE_SMS)) {
-                            Toast.makeText(DeviceControlActivity.this, "Write Data",
-                                    Toast.LENGTH_SHORT).show();
-                            mBluetoothLeService.write("tttt".getBytes(), writeCharacteristic);//向蓝牙传输数据失败，正在解决
+                            //mBluetoothLeService.write("AAAAA".getBytes(), characteristic);
+                            mBluetoothLeService.write("BBBBB");//
                         }
                         return true;
                     }
@@ -340,8 +339,6 @@ public class DeviceControlActivity extends Activity {
         );
         mGattServicesList.setAdapter(gattServiceAdapter);
     }
-
-    BluetoothGattCharacteristic writeCharacteristic;
 
     private static IntentFilter makeGattUpdateIntentFilter() {
         final IntentFilter intentFilter = new IntentFilter();

@@ -32,9 +32,22 @@
             </intent-filter>
         </activity>
 
+        <!--<activity
+            android:name=".activity.DeviceScanActivity"
+            android:launchMode="singleTask"
+            android:theme="@android:style/Theme.Holo.Light">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>-->
+
         <activity
             android:name=".activity.DeviceControlActivity"
             android:theme="@android:style/Theme.Holo.Light" />
+
         <service
             android:name=".connect.ble.BluetoothLeService"
             android:enabled="true" />

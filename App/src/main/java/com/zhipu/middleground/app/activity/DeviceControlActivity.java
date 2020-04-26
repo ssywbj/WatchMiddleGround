@@ -116,9 +116,15 @@ public class DeviceControlActivity extends Activity {
                         final BluetoothGattCharacteristic characteristic =
                                 mGattCharacteristics.get(groupPosition).get(childPosition);
                         String uuid = characteristic.getUuid().toString();
+                        final int charaProp = characteristic.getProperties();
+                        boolean canRead = (charaProp | BluetoothGattCharacteristic.PROPERTY_READ) > 0;
+                        boolean canNotify = (charaProp | BluetoothGattCharacteristic.PROPERTY_NOTIFY) > 0;
+                        boolean canWrite = (charaProp | BluetoothGattCharacteristic.PROPERTY_WRITE) > 0;
+                        Log.d(TAG, "characteristic charaProp: " + charaProp + ", canRead: " + canRead
+                                + ", canNotify: " + canNotify + ", canWrite: " + canWrite);
+
                         if (uuid.equals(SampleGattAttributes.CHAR_READ_WEATHER)) {
-                            final int charaProp = characteristic.getProperties();
-                            if ((charaProp | BluetoothGattCharacteristic.PROPERTY_READ) > 0) {
+                            if (canRead) {
                                 // If there is an active notification on a characteristic, clear
                                 // it first so it doesn't update the data field on the user interface.
                                 if (mNotifyCharacteristic != null) {
@@ -128,7 +134,7 @@ public class DeviceControlActivity extends Activity {
                                 mBluetoothLeService.readCharacteristic(characteristic);
                             }
 
-                            if ((charaProp | BluetoothGattCharacteristic.PROPERTY_NOTIFY) > 0) {
+                            if (canNotify) {
                                 mNotifyCharacteristic = characteristic;
                                 mBluetoothLeService.setCharacteristicNotification(characteristic, true);
                             }

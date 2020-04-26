@@ -23,6 +23,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.zhipu.middleground.app.R;
 import com.zhipu.middleground.app.adapter.RecyclerAdapter;
 import com.zhipu.middleground.app.view.RecyclerItemDecoration;
+import com.zhipu.middleground.communication.BluetoothHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +36,7 @@ public class BluetoothListActivity extends AppCompatActivity {
     private BluetoothListAdapter mBluetoothListAdapter;
     private List<BluetoothDevice> mBluetoothList = new ArrayList<>();
     private String mTag;
+    private BluetoothHelper mBluetoothHelper = new BluetoothHelper(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +44,8 @@ public class BluetoothListActivity extends AppCompatActivity {
         setContentView(R.layout.bluetooth_list_aty);
         mTag = getClass().getSimpleName();
         this.initRecyclerView();
+
+        mBluetoothHelper.init();
 
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (this.isSupportBluetooth()) {

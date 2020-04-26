@@ -21,16 +21,19 @@ public class BluetoothHelper {
 
     private Context mContext;
     private BluetoothAdapter mBluetoothAdapter;
+    private BleHelper mBleHelper;
 
     private OnDiscoveryListener mOnDiscoveryListener;
     private OnBondListener mOnBondListener;
 
     public BluetoothHelper(Context context) {
         mContext = context;
+        mBleHelper = new BleHelper();
     }
 
-    public void init() {
+    public void initialize() {
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        mBleHelper.initialize(mContext);
     }
 
     public boolean isSupportBluetooth() {
@@ -78,7 +81,7 @@ public class BluetoothHelper {
     /**
      * 停止搜索设备
      */
-    private void cancelDiscovery() {
+    public void cancelDiscovery() {
         if (mBluetoothAdapter.isDiscovering()) {
             mBluetoothAdapter.cancelDiscovery();
         }
@@ -106,7 +109,7 @@ public class BluetoothHelper {
             if (bluetoothDevice.createBond()) {
                 Log.d(TAG, "create bond successful");
             } else {
-                Log.d(TAG, "create bond fail");
+                Log.w(TAG, "create bond fail");
             }
         }
     }
@@ -114,6 +117,8 @@ public class BluetoothHelper {
     public void release() {
         this.cancelDiscovery();
         mContext.unregisterReceiver(mBlueToothReceiver);
+
+        mBleHelper.release();
     }
 
     private void registerReceivers() {
@@ -135,6 +140,10 @@ public class BluetoothHelper {
 
     public void setOnBondListener(OnBondListener onBondListener) {
         mOnBondListener = onBondListener;
+    }
+
+    public BleHelper getBleHelper() {
+        return mBleHelper;
     }
 
     private final BroadcastReceiver mBlueToothReceiver = new BroadcastReceiver() {

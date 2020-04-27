@@ -181,9 +181,7 @@ public class BluetoothListActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if (mBluetoothHelper.getConnectHelper().getState() == ConnectHelper.STATE_NONE) {
-            mBluetoothHelper.getConnectHelper().start();
-        }
+        mBluetoothHelper.getConnectHelper().start();
     }
 
     @Override

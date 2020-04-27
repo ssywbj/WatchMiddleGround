@@ -29,10 +29,10 @@ public class ConnectHelper {
     private static final UUID UUID_SECURE = UUID.fromString("fa87c0d0-afac-11de-8a39-0800200c9a66");
     private static final UUID UUID_INSECURE = UUID.fromString("8ce255c0-200a-11e0-ac64-0800200c9a66");
 
-    public static final int STATE_NONE = 0;
+    private static final int STATE_NONE = 0;
     private static final int STATE_LISTEN = 1;
     private static final int STATE_CONNECTING = 2;
-    public static final int STATE_CONNECTED = 3;
+    private static final int STATE_CONNECTED = 3;
     private int mState = STATE_NONE;
 
     private final BluetoothAdapter mBluetoothAdapter;
@@ -50,11 +50,11 @@ public class ConnectHelper {
         mUiHandler = new UiHandler(this);
     }
 
-    public synchronized int getState() {
-        return mState;
-    }
-
     public synchronized void start() {
+        if (mState != STATE_NONE) {
+            return;
+        }
+
         if (mConnectThread != null) {
             mConnectThread.cancel();
             mConnectThread = null;

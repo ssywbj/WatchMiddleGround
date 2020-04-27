@@ -2,8 +2,6 @@ package com.zhipu.middleground.app.activity;
 
 import android.app.ActionBar;
 import android.app.Activity;
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattService;
 import android.content.BroadcastReceiver;
@@ -210,9 +208,8 @@ public class DeviceControlActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-        if (mConnectHelper.getState() == ConnectHelper.STATE_NONE) {
-            mConnectHelper.start();
-        }
+        mConnectHelper.start();
+
         registerReceiver(mGattUpdateReceiver, makeGattUpdateIntentFilter());
         if (mBluetoothLeService != null) {
             final boolean result = mBluetoothLeService.connect(mDeviceAddress);

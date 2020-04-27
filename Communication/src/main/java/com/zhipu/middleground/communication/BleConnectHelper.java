@@ -230,19 +230,19 @@ public class BleConnectHelper {
 
     private void onConnectResponse(BluetoothDevice bluetoothDevice) {
         if (mConnectBleListener != null) {
-            mConnectBleListener.onConnect(bluetoothDevice);
+            mConnectBleListener.onConnectBle(bluetoothDevice);
         }
     }
 
     private void onDisconnectResponse(BluetoothDevice bluetoothDevice) {
         if (mConnectBleListener != null) {
-            mConnectBleListener.onDisconnect(bluetoothDevice);
+            mConnectBleListener.onDisconnectBle(bluetoothDevice);
         }
     }
 
     private void onReceiveDataResponse(byte[] data) {
         if (mConnectBleListener != null) {
-            mConnectBleListener.onReceiveData(data);
+            mConnectBleListener.onReceiveDataBle(data);
         }
     }
 

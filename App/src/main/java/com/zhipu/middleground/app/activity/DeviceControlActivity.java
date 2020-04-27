@@ -22,9 +22,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.zhipu.middle.common.SampleGattAttributes;
+import com.zhipu.middle.common.connect.ConnectHelper;
 import com.zhipu.middleground.app.R;
 import com.zhipu.middleground.app.connect.ble.BluetoothLeService;
-import com.zhipu.middleground.communication.ConnectHelper;
 
 import java.util.ArrayList;
 import java.util.HashMap;

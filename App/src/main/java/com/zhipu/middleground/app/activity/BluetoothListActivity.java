@@ -18,13 +18,13 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.zhipu.middle.common.callback.OnConnectListener;
+import com.zhipu.middle.common.connect.ConnectHelper;
 import com.zhipu.middleground.app.R;
 import com.zhipu.middleground.app.adapter.RecyclerAdapter;
 import com.zhipu.middleground.app.view.RecyclerItemDecoration;
 import com.zhipu.middleground.communication.BluetoothHelper;
-import com.zhipu.middleground.communication.ConnectHelper;
 import com.zhipu.middleground.communication.callback.OnBondListener;
-import com.zhipu.middleground.communication.callback.OnConnectListener;
 import com.zhipu.middleground.communication.callback.OnDiscoveryListener;
 
 import java.util.ArrayList;

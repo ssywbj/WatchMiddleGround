@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.util.Log;
 
+import com.zhipu.middle.common.connect.ConnectHelper;
 import com.zhipu.middleground.communication.callback.OnBondListener;
 import com.zhipu.middleground.communication.callback.OnDiscoveryListener;
 

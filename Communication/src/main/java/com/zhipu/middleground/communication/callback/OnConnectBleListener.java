@@ -4,14 +4,14 @@ import android.bluetooth.BluetoothDevice;
 
 public interface OnConnectBleListener {
 
-    void onConnect(BluetoothDevice device);
+    void onConnectBle(BluetoothDevice device);
 
-    void onDisconnect(BluetoothDevice device);
+    void onDisconnectBle(BluetoothDevice device);
 
     /**
      * 接收到服务端返回数据的回调，在方法在子线程中调用
      *
      * @param data 接收到数据的回调
      */
-    void onReceiveData(byte[] data);
+    void onReceiveDataBle(byte[] data);
 }

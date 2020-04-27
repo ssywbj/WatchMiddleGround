@@ -24,12 +24,13 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 
 import com.zhipu.middle.common.SampleGattAttributes;
+import com.zhipu.middle.common.callback.OnConnectListener;
+import com.zhipu.middle.common.connect.ConnectHelper;
 
 import java.util.UUID;
 
-public class MiddleGroundService extends Service {
+public class MiddleGroundService extends Service implements OnConnectListener {
     private static final String TAG = MiddleGroundService.class.getSimpleName();
-    private BluetoothConnectHelper mBluetoothConnectHelper = new BluetoothConnectHelper();
 
     private final static UUID UUID_SERVER = UUID.fromString(SampleGattAttributes.UUID_SERVER);
     private final static UUID UUID_READ_WEATHER = UUID.fromString(SampleGattAttributes.CHAR_READ_WEATHER);
@@ -39,11 +40,12 @@ public class MiddleGroundService extends Service {
     private BluetoothManager mBluetoothManager;
     private BluetoothGattServer mBluetoothGattServer;
     private BluetoothDevice mBluetoothDevice;
+    private ConnectHelper mConnectHelper = new ConnectHelper();
 
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.d(TAG, TAG + ", onCreate");
+        mConnectHelper.setOnConnectListener(this);
         this.initGATTServer();
         this.initServices();
     }
@@ -58,9 +60,7 @@ public class MiddleGroundService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(TAG, TAG + ", onStartCommand");
-        if (mBluetoothConnectHelper.getState() == BluetoothConnectHelper.STATE_NONE) {
-            mBluetoothConnectHelper.start();
-        }
+        mConnectHelper.start();
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -68,7 +68,7 @@ public class MiddleGroundService extends Service {
     public void onDestroy() {
         super.onDestroy();
         Log.d(TAG, TAG + ", onDestroy");
-        mBluetoothConnectHelper.stop();
+        mConnectHelper.stop();
     }
 
     private void initGATTServer() {
@@ -258,5 +258,20 @@ public class MiddleGroundService extends Service {
             mBluetoothGattServer.notifyCharacteristicChanged(mBluetoothDevice, characteristic, false);
         }
         Log.d(TAG, "4.发送: " + message);
+    }
+
+    @Override
+    public void onConnect(BluetoothDevice device) {
+        Log.d(TAG, TAG + ", onConnect: " + device);
+    }
+
+    @Override
+    public void onDisconnect(BluetoothDevice device, String error) {
+        Log.d(TAG, TAG + ", onDisconnect: " + device + ", error: " + error);
+    }
+
+    @Override
+    public void onReceiveData(byte[] data) {
+        Log.d(TAG, TAG + ", data: " + new String(data));
     }
 }

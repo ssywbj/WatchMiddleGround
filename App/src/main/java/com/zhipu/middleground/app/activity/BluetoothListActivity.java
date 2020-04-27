@@ -23,8 +23,10 @@ import com.zhipu.middle.common.connect.ConnectHelper;
 import com.zhipu.middleground.app.R;
 import com.zhipu.middleground.app.adapter.RecyclerAdapter;
 import com.zhipu.middleground.app.view.RecyclerItemDecoration;
+import com.zhipu.middleground.communication.BleConnectHelper;
 import com.zhipu.middleground.communication.BluetoothHelper;
 import com.zhipu.middleground.communication.callback.OnBondListener;
+import com.zhipu.middleground.communication.callback.OnConnectBleListener;
 import com.zhipu.middleground.communication.callback.OnDiscoveryListener;
 
 import java.util.ArrayList;
@@ -93,8 +95,7 @@ public class BluetoothListActivity extends AppCompatActivity {
 
                         @Override
                         public void onBonded(BluetoothDevice bluetoothDevice) {
-                            DeviceControlActivity.openPage(BluetoothListActivity.this,
-                                    bluetoothDevice.getName(), bluetoothDevice.getAddress());
+                            buildConnect(bluetoothDevice);
                         }
 
                         @Override
@@ -102,71 +103,7 @@ public class BluetoothListActivity extends AppCompatActivity {
                         }
                     });
                 } else {
-                    //DeviceControlActivity.openPage(BluetoothListActivity.this, data.getName(), data.getAddress());
-
-                    mBluetoothHelper.cancelDiscovery();
-
-                    ConnectHelper connectHelper = mBluetoothHelper.getConnectHelper();
-                    if (connectHelper.isConnected()) {
-                        connectHelper.write("dfadfadfa".getBytes());
-                    } else {
-                        connectHelper.connect(data.getAddress(), false);
-                    }
-                    connectHelper.setOnConnectListener(new OnConnectListener() {
-                        @Override
-                        public void onConnect(BluetoothDevice device) {
-                            Toast.makeText(BluetoothListActivity.this, "连接成功: " + device.getName(), Toast.LENGTH_SHORT).show();
-                        }
-
-                        @Override
-                        public void onDisconnect(BluetoothDevice device, String error) {
-                            Toast.makeText(BluetoothListActivity.this, "连接异常: " + device.getName() + ", " + error, Toast.LENGTH_SHORT).show();
-                        }
-
-                        @Override
-                        public void onReceiveData(final byte[] data) {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    Toast.makeText(BluetoothListActivity.this, "data: " +
-                                            new String(data), Toast.LENGTH_SHORT).show();
-                                }
-                            });
-                        }
-                    });
-
-                    /*BleConnectHelper bleHelper = mBluetoothHelper.getBleHelper();
-                    if (!bleHelper.isSupportBle()) {
-                        return;
-                    }
-                    if (bleHelper.isConnected()) {
-                        //bleHelper.disconnect();
-                        bleHelper.write("FFFFFFFF");
-                    } else {
-                        bleHelper.connect(data.getAddress());
-                    }
-                    bleHelper.setConnectBleListener(new OnConnectBleListener() {
-                        @Override
-                        public void onConnect(BluetoothDevice device) {
-                            Toast.makeText(BluetoothListActivity.this, "连接成功: " + device.getName(), Toast.LENGTH_SHORT).show();
-                        }
-
-                        @Override
-                        public void onDisconnect(BluetoothDevice device) {
-                            Toast.makeText(BluetoothListActivity.this, "断开连接: " + device.getName(), Toast.LENGTH_SHORT).show();
-                        }
-
-                        @Override
-                        public void onReceiveData(final byte[] data) {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    Toast.makeText(BluetoothListActivity.this, "data: " +
-                                            new String(data), Toast.LENGTH_SHORT).show();
-                                }
-                            });
-                        }
-                    });*/
+                    buildConnect(data);
                 }
             }
         });
@@ -176,6 +113,72 @@ public class BluetoothListActivity extends AppCompatActivity {
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.addItemDecoration(new RecyclerItemDecoration(this, true));
         recyclerView.setAdapter(mBluetoothListAdapter);
+    }
+
+    private void buildConnect(BluetoothDevice device) {
+        mBluetoothHelper.cancelDiscovery();
+
+        ConnectHelper connectHelper = mBluetoothHelper.getConnectHelper();
+        if (connectHelper.isConnected()) {
+            connectHelper.write("dfadfadfa".getBytes());
+        } else {
+            connectHelper.connect(device.getAddress(), true);
+        }
+        connectHelper.setOnConnectListener(new OnConnectListener() {
+            @Override
+            public void onConnect(BluetoothDevice device) {
+                Toast.makeText(BluetoothListActivity.this, "连接成功: " + device.getName(), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onDisconnect(BluetoothDevice device, String error) {
+                Toast.makeText(BluetoothListActivity.this, "连接异常: " + device.getName() + ", " + error, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onReceiveData(final byte[] data) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(BluetoothListActivity.this, "device: " +
+                                new String(data), Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        });
+
+        /*BleConnectHelper bleHelper = mBluetoothHelper.getBleHelper();
+        if (!bleHelper.isSupportBle()) {
+            return;
+        }
+        if (bleHelper.isConnected()) {
+            //bleHelper.disconnect();
+            bleHelper.write("FFFFFFFF");
+        } else {
+            bleHelper.connect(device.getAddress());
+        }
+        bleHelper.setConnectBleListener(new OnConnectBleListener() {
+            @Override
+            public void onConnectBle(BluetoothDevice device) {
+                Toast.makeText(BluetoothListActivity.this, "连接成功: " + device.getName(), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onDisconnectBle(BluetoothDevice device) {
+                Toast.makeText(BluetoothListActivity.this, "断开连接: " + device.getName(), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onReceiveDataBle(final byte[] device) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(BluetoothListActivity.this, "device: " +
+                                new String(device), Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        });*/
     }
 
     @Override

@@ -2,7 +2,7 @@ package com.zhipu.middleground.communication.callback;
 
 import android.bluetooth.BluetoothDevice;
 
-public interface OnBleConnectListener {
+public interface OnConnectBleListener {
 
     void onConnect(BluetoothDevice device);
 

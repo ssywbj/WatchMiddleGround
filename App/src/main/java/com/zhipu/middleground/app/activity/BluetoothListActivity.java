@@ -21,10 +21,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.zhipu.middleground.app.R;
 import com.zhipu.middleground.app.adapter.RecyclerAdapter;
 import com.zhipu.middleground.app.view.RecyclerItemDecoration;
-import com.zhipu.middleground.communication.BleHelper;
 import com.zhipu.middleground.communication.BluetoothHelper;
-import com.zhipu.middleground.communication.callback.OnBleConnectListener;
+import com.zhipu.middleground.communication.ConnectHelper;
 import com.zhipu.middleground.communication.callback.OnBondListener;
+import com.zhipu.middleground.communication.callback.OnConnectListener;
 import com.zhipu.middleground.communication.callback.OnDiscoveryListener;
 
 import java.util.ArrayList;
@@ -105,7 +105,37 @@ public class BluetoothListActivity extends AppCompatActivity {
                     //DeviceControlActivity.openPage(BluetoothListActivity.this, data.getName(), data.getAddress());
 
                     mBluetoothHelper.cancelDiscovery();
-                    BleHelper bleHelper = mBluetoothHelper.getBleHelper();
+
+                    ConnectHelper connectHelper = mBluetoothHelper.getConnectHelper();
+                    if (connectHelper.isConnected()) {
+                        connectHelper.write("dfadfadfa".getBytes());
+                    } else {
+                        connectHelper.connect(data.getAddress(), false);
+                    }
+                    connectHelper.setOnConnectListener(new OnConnectListener() {
+                        @Override
+                        public void onConnect(BluetoothDevice device) {
+                            Toast.makeText(BluetoothListActivity.this, "连接成功: " + device.getName(), Toast.LENGTH_SHORT).show();
+                        }
+
+                        @Override
+                        public void onDisconnect(BluetoothDevice device, String error) {
+                            Toast.makeText(BluetoothListActivity.this, "连接异常: " + device.getName() + ", " + error, Toast.LENGTH_SHORT).show();
+                        }
+
+                        @Override
+                        public void onReceiveData(final byte[] data) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(BluetoothListActivity.this, "data: " +
+                                            new String(data), Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
+                    });
+
+                    /*BleConnectHelper bleHelper = mBluetoothHelper.getBleHelper();
                     if (!bleHelper.isSupportBle()) {
                         return;
                     }
@@ -115,7 +145,7 @@ public class BluetoothListActivity extends AppCompatActivity {
                     } else {
                         bleHelper.connect(data.getAddress());
                     }
-                    bleHelper.setOnBleConnectListener(new OnBleConnectListener() {
+                    bleHelper.setConnectBleListener(new OnConnectBleListener() {
                         @Override
                         public void onConnect(BluetoothDevice device) {
                             Toast.makeText(BluetoothListActivity.this, "连接成功: " + device.getName(), Toast.LENGTH_SHORT).show();
@@ -136,7 +166,7 @@ public class BluetoothListActivity extends AppCompatActivity {
                                 }
                             });
                         }
-                    });
+                    });*/
                 }
             }
         });
@@ -149,10 +179,19 @@ public class BluetoothListActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        if (mBluetoothHelper.getConnectHelper().getState() == ConnectHelper.STATE_NONE) {
+            mBluetoothHelper.getConnectHelper().start();
+        }
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         mBluetoothHelper.release();
         mBluetoothDevices.clear();
+        mBluetoothHelper.getConnectHelper().stop();
     }
 
     @Override

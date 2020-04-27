@@ -21,14 +21,16 @@ public class BluetoothHelper {
 
     private Context mContext;
     private BluetoothAdapter mBluetoothAdapter;
-    private BleHelper mBleHelper;
+    private BleConnectHelper mBleHelper;
+    private ConnectHelper mConnectHelper;
 
     private OnDiscoveryListener mOnDiscoveryListener;
     private OnBondListener mOnBondListener;
 
     public BluetoothHelper(Context context) {
         mContext = context;
-        mBleHelper = new BleHelper();
+        mBleHelper = new BleConnectHelper();
+        mConnectHelper = new ConnectHelper();
     }
 
     public void initialize() {
@@ -142,8 +144,12 @@ public class BluetoothHelper {
         mOnBondListener = onBondListener;
     }
 
-    public BleHelper getBleHelper() {
+    public BleConnectHelper getBleHelper() {
         return mBleHelper;
+    }
+
+    public ConnectHelper getConnectHelper() {
+        return mConnectHelper;
     }
 
     private final BroadcastReceiver mBlueToothReceiver = new BroadcastReceiver() {

@@ -25,8 +25,8 @@ import android.widget.Toast;
 
 import com.zhipu.middle.common.SampleGattAttributes;
 import com.zhipu.middleground.app.R;
-import com.zhipu.middleground.app.connect.BluetoothConnectHelper;
 import com.zhipu.middleground.app.connect.ble.BluetoothLeService;
+import com.zhipu.middleground.communication.ConnectHelper;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -54,7 +54,7 @@ public class DeviceControlActivity extends Activity {
     private boolean mConnected = false;
     private BluetoothGattCharacteristic mNotifyCharacteristic;
 
-    private BluetoothConnectHelper mBluetoothConnectHelper = new BluetoothConnectHelper();
+    private ConnectHelper mConnectHelper = new ConnectHelper();
 
     // Code to manage Service lifecycle.
     private final ServiceConnection mServiceConnection = new ServiceConnection() {
@@ -169,8 +169,7 @@ public class DeviceControlActivity extends Activity {
         final Intent intent = getIntent();
         mDeviceAddress = intent.getStringExtra(EXTRAS_DEVICE_ADDRESS);
 
-        final BluetoothDevice bluetoothDevice = BluetoothAdapter.getDefaultAdapter().getRemoteDevice(mDeviceAddress);
-        mBluetoothConnectHelper.connect(bluetoothDevice, false);
+        mConnectHelper.connect(mDeviceAddress, false);
 
         // Sets up UI references.
         final TextView textAddress = findViewById(R.id.device_address);
@@ -211,8 +210,8 @@ public class DeviceControlActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-        if (mBluetoothConnectHelper.getState() == BluetoothConnectHelper.STATE_NONE) {
-            mBluetoothConnectHelper.start();
+        if (mConnectHelper.getState() == ConnectHelper.STATE_NONE) {
+            mConnectHelper.start();
         }
         registerReceiver(mGattUpdateReceiver, makeGattUpdateIntentFilter());
         if (mBluetoothLeService != null) {
@@ -232,7 +231,7 @@ public class DeviceControlActivity extends Activity {
         super.onDestroy();
         unbindService(mServiceConnection);
         mBluetoothLeService = null;
-        mBluetoothConnectHelper.stop();
+        mConnectHelper.stop();
         mGattCharacteristics.clear();
     }
 
@@ -266,13 +265,12 @@ public class DeviceControlActivity extends Activity {
     }
 
     private void sendMessage(String message) {
-        if (mBluetoothConnectHelper.getState() != BluetoothConnectHelper.STATE_COMMUNICATE) {
+        if (mConnectHelper.isConnected()) {
+            if (message != null) {
+                mConnectHelper.write(message.getBytes());
+            }
+        } else {
             Toast.makeText(this, "未连接", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        if (message.length() > 0) {
-            mBluetoothConnectHelper.write(message.getBytes());
         }
     }
 

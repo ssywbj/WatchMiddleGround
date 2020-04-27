@@ -17,13 +17,13 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import com.zhipu.middle.common.SampleGattAttributes;
-import com.zhipu.middleground.communication.callback.OnBleConnectListener;
+import com.zhipu.middleground.communication.callback.OnConnectBleListener;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
 import java.util.UUID;
 
-public class BleHelper {
+public class BleConnectHelper {
     private final static String TAG = BluetoothHelper.TAG;
     private static final int STATE_DISCONNECTED = 0;
     private static final int STATE_CONNECTING = 1;
@@ -33,7 +33,7 @@ public class BleHelper {
     private static final int MSG_ON_DISCONNECT = 2;
 
     private Context mContext;
-    private OnBleConnectListener mOnBleConnectListener;
+    private OnConnectBleListener mConnectBleListener;
     private UiHandler mUiHandler;
 
     private BluetoothAdapter mBluetoothAdapter;
@@ -138,8 +138,8 @@ public class BleHelper {
         mBluetoothGatt.setCharacteristicNotification(characteristic, enabled);
     }
 
-    public void setOnBleConnectListener(OnBleConnectListener onBleConnectListener) {
-        mOnBleConnectListener = onBleConnectListener;
+    public void setConnectBleListener(OnConnectBleListener onConnectBleListener) {
+        mConnectBleListener = onConnectBleListener;
     }
 
     private final BluetoothGattCallback mGattCallback = new BluetoothGattCallback() {
@@ -229,34 +229,34 @@ public class BleHelper {
     };
 
     private void onConnectResponse(BluetoothDevice bluetoothDevice) {
-        if (mOnBleConnectListener != null) {
-            mOnBleConnectListener.onConnect(bluetoothDevice);
+        if (mConnectBleListener != null) {
+            mConnectBleListener.onConnect(bluetoothDevice);
         }
     }
 
     private void onDisconnectResponse(BluetoothDevice bluetoothDevice) {
-        if (mOnBleConnectListener != null) {
-            mOnBleConnectListener.onDisconnect(bluetoothDevice);
+        if (mConnectBleListener != null) {
+            mConnectBleListener.onDisconnect(bluetoothDevice);
         }
     }
 
     private void onReceiveDataResponse(byte[] data) {
-        if (mOnBleConnectListener != null) {
-            mOnBleConnectListener.onReceiveData(data);
+        if (mConnectBleListener != null) {
+            mConnectBleListener.onReceiveData(data);
         }
     }
 
     private static class UiHandler extends Handler {
-        private WeakReference<BleHelper> mWeakReference;
+        private WeakReference<BleConnectHelper> mWeakReference;
 
-        UiHandler(BleHelper bleHelper) {
+        UiHandler(BleConnectHelper bleHelper) {
             mWeakReference = new WeakReference<>(bleHelper);
         }
 
         @Override
         public void dispatchMessage(@NonNull Message msg) {
             super.dispatchMessage(msg);
-            BleHelper bleHelper = mWeakReference.get();
+            BleConnectHelper bleHelper = mWeakReference.get();
             if (bleHelper == null) {
                 return;
             }
